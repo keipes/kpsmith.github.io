@@ -1,0 +1,14 @@
+{
+  "jspm": {
+    "directories": {
+      "lib": "src",
+      "packages": "jspm_packages"
+    },
+    "dependencies": {
+      "react": "npm:react@^0.13.1"
+    }
+  },
+  "devDependencies": {
+    "gulp": "~3.8.11"
+  }
+}
