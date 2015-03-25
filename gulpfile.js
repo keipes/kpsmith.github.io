@@ -1,5 +1,7 @@
 var gulp = require('gulp'),
-	react = require('gulp-react');
+	gutil = require('gulp-util'),
+	react = require('gulp-react'),
+    combiner = require('stream-combiner2');
 
 var conf = {
 	jsxSrc: 'src/components/jsx/*.jsx',
@@ -11,12 +13,25 @@ gulp.task('default', function() {
 
 });
 
-gulp.task('compile-jsx', function(cb) {
-	return gulp.src(conf.jsxSrc)
-		.pipe(react({es6module: true}))
-		.pipe(gulp.dest(conf.jsxDest));
-})
+function onError(e) {
+	gutil.log(gutil.colors.green(e.message));
+	// console.log(e);
+	this.emit('end');
+}
 
-gulp.task('watch', function() {
+gulp.task('compile-jsx', function(cb) {
+	// start stream-combiner to watch and report errors
+	var combined = combiner.obj([
+		gulp.src(conf.jsxSrc)
+			.pipe(react({es6module: true}))
+			.on('error', onError)
+			.pipe(gulp.dest(conf.jsxDest))
+	]);
+	combined.on('error', console.error.bind(console));
+	return combined;
+});
+
+gulp.task('watch', ['compile-jsx'], function() {
+
 	gulp.watch(conf.jsxSrc, ['compile-jsx']);
 });
